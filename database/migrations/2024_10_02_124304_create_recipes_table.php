@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
+            $table->string('title')->nullable();
+            $table->string('ingredients')->nullable();
+            $table->string('instructions')->nullable();
+            $table->string('prep_time')->nullable();
+            $table->string('difficulty')->nullable();
+            $table->string('user_id')->nullable();
             $table->timestamps();
         });
     }
