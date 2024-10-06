@@ -21,7 +21,7 @@ class RecipeSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
             Recipe::create([
                 'title' => $faker->sentence(3),
-                'ingredients' => $faker->paragraph(3),
+                'ingredients' => $faker->paragraph(2),
                 'instructions' => $faker->paragraph(2),
                 'prep_time' => $faker->numberBetween(10, 120), // time in minutes
                 'difficulty' => $faker->randomElement(['Easy', 'Medium', 'Hard']),

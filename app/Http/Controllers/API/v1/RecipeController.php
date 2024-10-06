@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\v1;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class RecipeController extends Controller
 {
@@ -12,17 +13,19 @@ class RecipeController extends Controller
      */
     public function index()
     {
-
-            Log::info('Index method called');
-
+        Log::info('Index method called');
         $recipes = Recipe::all();
+        return response()->json(['success' => true, 'data' => $recipes]);
 
-        $data = [
-            'success' => true,
-            'data' => $recipes
-        ];
 
-        return response()->json($data);
+        // $recipes = Recipe::all();
+
+        // $data = [
+        //     'success' => true,
+        //     'data' => $recipes
+        // ];
+
+        // return response()->json($data);
     }
 
     /**
@@ -46,7 +49,7 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
-        //
+        return response()->json(['success' => true, 'data' => $recipe]);
     }
 
     /**
