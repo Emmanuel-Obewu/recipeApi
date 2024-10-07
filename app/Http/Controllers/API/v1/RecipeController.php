@@ -5,6 +5,8 @@ use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
 
 class RecipeController extends Controller
 {
@@ -13,27 +15,14 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        Log::info('Index method called');
         $recipes = Recipe::all();
-        return response()->json(['success' => true, 'data' => $recipes]);
 
+        $data = [
+            'success' => true,
+            'data' => $recipes
+        ];
 
-        // $recipes = Recipe::all();
-
-        // $data = [
-        //     'success' => true,
-        //     'data' => $recipes
-        // ];
-
-        // return response()->json($data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json($data);
     }
 
     /**
@@ -41,29 +30,51 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedInput = $request->validate([
+            'title' => 'required|string|max:295',
+            // 'description' => 'required|string',
+            'ingredients' => 'required|string',
+            'instructions' => 'required|string',
+            'prep_time' => 'required|string',
+            'difficulty' => 'required|string',
+        ]);
+
+        $recipe = Recipe::create([
+            'title' => $validatedInput['title'],
+            // 'description' => $validatedInput['description'],
+            'ingredients' => $validatedInput['ingredients'],
+            'instructions' => $validatedInput['instructions'],
+            'prep_time' => $validatedInput['prep_time'],
+            'difficulty' => $validatedInput['difficulty'],
+            'user_id' => Auth::id(),
+        ]);
+
+        return  response()->json([
+            'success' => true,
+            'data' => $recipe
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Recipe $recipe)
+    public function show($id)
     {
-        return response()->json(['success' => true, 'data' => $recipe]);
+        $recipe = Recipe::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+             'data' => $recipe
+            ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Recipe $recipe)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Recipe $recipe)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -71,8 +82,20 @@ class RecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Recipe $recipe)
+    public function destroy($id)
     {
-        //
+        $recipe = Recipe::findOrFail($id);
+
+
+        // if ($recipe->user_id !== Auth::id()) {
+        //     return response()->json(['message' => 'Unauthorized'], 403);
+        // }
+
+        $recipe->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Recipe deleted successfully'
+        ], 200);
     }
 }
