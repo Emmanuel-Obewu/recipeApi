@@ -12,18 +12,18 @@ Route::get('/', function () {
 });
 
 Route::get('get-tokens', function() {
-    $credentials = [
-        'email' => 'admin@admin.com',
-        'password' => 'password'
-    ];
+    // $credentials = [
+    //     'email' => 'admin@admin.com',
+    //     'password' => 'password'
+    // ];
 
-        $user = new User();
-        $user->name = 'Admin';
-        $user->email = $credentials['email'];
-        $user->password = Hash::make($credentials['password']);
-        $user->save();
+    //     $user = new User();
+    //     $user->name = 'Admin';
+    //     $user->email = $credentials['email'];
+    //     $user->password = Hash::make($credentials['password']);
+    //     $user->save();
 
-        // $user = User::first(); // Get the first user
+        $user = User::first();
 
     if ($user) {
         $siteAdminToken = $user->createToken('site-admin-token', ['create', 'update', 'delete']);

@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\v1;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,9 +73,28 @@ class RecipeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Recipe $recipe)
     {
-        //
+        if ($recipe->user_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'You are not authorized to update this recipe.',
+            ], 403);
+        }
+
+        $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'ingredients' => 'sometimes|required|string',
+            'instructions' => 'sometimes|required|string',
+            'prep_time' => 'sometimes|required|integer',
+            'difficulty' => 'sometimes|required|string',
+        ]);
+
+        $recipe->update($request->only(['title', 'ingredients', 'instructions', 'prep_time', 'difficulty']));
+
+        return response()->json([
+            'message' => 'Recipe updated successfully!',
+            'recipe' => $recipe,
+        ], 200);
     }
 
     /**

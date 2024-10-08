@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('ingredients')->nullable();
             $table->string('instructions')->nullable();
             $table->string('prep_time')->nullable();
-            $table->string('difficulty')->nullable();
             $table->string('user_id')->nullable();
             $table->timestamps();
         });
