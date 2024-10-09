@@ -55,5 +55,6 @@ class Kernel extends HttpKernel
         // 'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         // Add other route middleware here as needed
+        'check.recipe.owner' => \App\Http\Middleware\CheckRecipeOwner::class,
     ];
 }

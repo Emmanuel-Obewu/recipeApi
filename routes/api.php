@@ -3,13 +3,15 @@
 use App\Http\Controllers\v1\RecipeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\CheckRecipeOwner;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function() {
-    Route::apiResource('recipes', RecipeController::class);
+    Route::apiResource('recipes', RecipeController::class)->except(['destroy']);
+    Route::delete('recipes/{recipe}', 'RecipeController@destroy')->middleware(CheckRecipeOwner::class);
 });
 
 
@@ -32,5 +34,5 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function() {
 // Route::middleware('auth:sanctum')->post('recipes', [RecipeController::class, 'store']);
 // Route::middleware('auth:sanctum')->put('recipes', [RecipeController::class, 'update']);
 // Route::middleware('auth:sanctum')->patch('recipes', [RecipeController::class, 'update']);
-// Route::middleware('auth:sanctum')->delete('recipes', [RecipeController::class, 'destroy']);
+// Route::middleware('auth:sanctum')->delete('recipes', [RecipeController::class, 'destroy'])->middleware('check.recipe.owner');
 // });
