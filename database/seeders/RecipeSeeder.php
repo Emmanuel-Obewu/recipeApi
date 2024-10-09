@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use App\Enums\RecipeDifficulty;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeSeeder extends Seeder
 {
@@ -26,7 +27,7 @@ class RecipeSeeder extends Seeder
                 'instructions' => $faker->paragraph(2),
                 'prep_time' => $faker->numberBetween(10, 120),
                 'difficulty' => $faker->randomElement(RecipeDifficulty::cases())->value,
-                'user_id' => 1, 
+                'user_id' => Auth::id(),
             ]);
         }
     }

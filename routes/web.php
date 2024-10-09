@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\v1\AuthController;
 use Illuminate\Support\Facades\Auth;
+use Faker\Factory;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,32 +16,36 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::get('get-tokens', function() {
-    $credentials = [
-        'email' => 'admin@admin.com',
-        'password' => 'password'
-    ];
+    $faker = \Faker\Factory::create();
 
-        $user = new User();
-        $user->name = 'Admin';
-        $user->email = $credentials['email'];
-        $user->password = Hash::make($credentials['password']);
-        $user->save();
+    $name = $faker->name;
+    $email = $faker->email;
+    $password = $faker->password('6');
 
-        // $user = User::first();
+    $user = User::whereEmail($email)->first();
 
     if ($user) {
-        $siteAdminToken = $user->createToken('site-admin-token', ['create', 'update', 'delete']);
-        $chefToken = $user->createToken('chef-token', ['create', 'update']);
-        $basicToken = $user->createToken('basic-token', ['none']);
-
-        return [
-            'admin' => $siteAdminToken->plainTextToken,
-            'update' => $chefToken->plainTextToken,
-            'basic' => $basicToken->plainTextToken,
-        ];
+        return response()->json([
+            'error' => 'User/Chef  already exists'
+        ], 400);
     }
 
-    return response()->json(['error' => 'No user found'], 404);
+    $user = new User();
+    $user->name = $name;
+    $user->email = $email;
+    $user->password = Hash::make($password);
+    $user->save();
+
+    $siteAdminToken = $user->createToken('site-admin-token', ['create', 'update', 'delete']);
+    $chefToken = $user->createToken('chef-token', ['create', 'update']);
+    $basicToken = $user->createToken('basic-token', ['none']);
+
+    return [
+        'Username' => $name,
+        'admin' => $siteAdminToken->plainTextToken,
+        'update' => $chefToken->plainTextToken,
+        'basic' => $basicToken->plainTextToken,
+    ];
 });
 
 Route::get('/dashboard', function () {
