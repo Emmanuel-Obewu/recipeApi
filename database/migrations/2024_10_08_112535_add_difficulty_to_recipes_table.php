@@ -13,9 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recipes', function (Blueprint $table) {
-            Schema::table('recipes', function (Blueprint $table) {
                 $table->string('difficulty')->cast(RecipeDifficulty::class);
-            });
         });
     }
 
