@@ -29,31 +29,42 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedInput = $request->validate([
-            'title' => 'required|string|max:295',
-            // 'description' => 'required|string',
-            'ingredients' => 'required|string',
-            'instructions' => 'required|string',
-            'prep_time' => 'required|string',
-            'difficulty' => 'required|string',
-        ]);
+        try {
+            $validatedInput = $request->validate([
+                'title' => 'required|string|max:295',
+                // 'description' => 'required|string',
+                'ingredients' => 'required|string',
+                'instructions' => 'required|string',
+                'prep_time' => 'required|string',
+                'difficulty' => 'required|string',
+            ]);
 
-        $recipe = Recipe::create([
-            'title' => $validatedInput['title'],
-            // 'description' => $validatedInput['description'],
-            'ingredients' => $validatedInput['ingredients'],
-            'instructions' => $validatedInput['instructions'],
-            'prep_time' => $validatedInput['prep_time'],
-            'difficulty' => $validatedInput['difficulty'],
-            'user_id' => Auth::id(),
-        ]);
+            $recipe = Recipe::create([
+                'title' => $validatedInput['title'],
+                // 'description' => $validatedInput['description'],
+                'ingredients' => $validatedInput['ingredients'],
+                'instructions' => $validatedInput['instructions'],
+                'prep_time' => $validatedInput['prep_time'],
+                'difficulty' => $validatedInput['difficulty'],
+                'user_id' => Auth::id(),
+            ]);
 
-        return  response()->json([
-            'success' => true,
-            'data' => $recipe
-        ], 201);
+            return  response()->json([
+                'success' => true,
+                'data' => $recipe
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the recipe.',
+            ], 500);
+        }
     }
-
     /**
      * Display the specified resource.
      */
