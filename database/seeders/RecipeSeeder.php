@@ -24,9 +24,9 @@ class RecipeSeeder extends Seeder
                 'title' => $faker->sentence(3),
                 'ingredients' => $faker->paragraph(2),
                 'instructions' => $faker->paragraph(2),
-                'prep_time' => $faker->numberBetween(10, 120), // time in minutes
+                'prep_time' => $faker->numberBetween(10, 120),
                 'difficulty' => $faker->randomElement(RecipeDifficulty::cases())->value,
-                'user_id' => 1, // Assuming 1 for a test user, adjust as needed
+                'user_id' => 1, 
             ]);
         }
     }
