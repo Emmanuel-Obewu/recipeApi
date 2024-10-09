@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\v1\RecipeController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckRecipeOwner;
+use Illuminate\Support\Facades\Hash;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -14,6 +16,38 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function() {
     Route::delete('recipes/{recipe}', 'RecipeController@destroy')->middleware(CheckRecipeOwner::class);
 });
 
+Route::get('get-tokens', function() {
+    $faker = \Faker\Factory::create();
+
+    $name = $faker->name;
+    $email = $faker->email;
+    $password = $faker->password('6');
+
+    $user = User::whereEmail($email)->first();
+
+    if ($user) {
+        return response()->json([
+            'error' => 'User/Chef  already exists'
+        ], 400);
+    }
+
+    $user = new User();
+    $user->name = $name;
+    $user->email = $email;
+    $user->password = Hash::make($password);
+    $user->save();
+
+    $siteAdminToken = $user->createToken('site-admin-token', ['create', 'update', 'delete']);
+    $chefToken = $user->createToken('chef-token', ['create', 'update']);
+    $basicToken = $user->createToken('basic-token', ['none']);
+
+    return [
+        'Username' => $name,
+        'admin' => $siteAdminToken->plainTextToken,
+        'update' => $chefToken->plainTextToken,
+        'basic' => $basicToken->plainTextToken,
+    ];
+});
 
 
 
