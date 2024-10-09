@@ -5,7 +5,8 @@ use App\Models\Recipe;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Validation\ValidationException;
+use Exception;
 
 class RecipeController extends Controller
 {
@@ -53,12 +54,12 @@ class RecipeController extends Controller
                 'success' => true,
                 'data' => $recipe
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while creating the recipe.',
