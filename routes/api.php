@@ -63,10 +63,10 @@ Route::get('get-tokens', function() {
 
 
 
-// Route::group(['prefix' => 'v1'], function() {
-// Route::middleware('auth:sanctum')->get('recipes', [RecipeController::class, 'index']);
-// Route::middleware('auth:sanctum')->post('recipes', [RecipeController::class, 'store']);
-// Route::middleware('auth:sanctum')->put('recipes', [RecipeController::class, 'update']);
-// Route::middleware('auth:sanctum')->patch('recipes', [RecipeController::class, 'update']);
-// Route::middleware('auth:sanctum')->delete('recipes', [RecipeController::class, 'destroy'])->middleware('check.recipe.owner');
+// Route::group(['prefix' => 'v1',  'middleware' => 'auth:api'], function () {
+// Route::get('recipes', [RecipeController::class, 'index']);
+// Route::post('recipes', [RecipeController::class, 'store']);
+// Route::put('recipes', [RecipeController::class, 'update']);
+// Route::patch('recipes', [RecipeController::class, 'update']);
+// Route::delete('recipes', [RecipeController::class, 'destroy'])->middleware('check.recipe.owner');
 // });
