@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('instructions')->nullable();
             $table->string('prep_time')->nullable();
             $table->string('user_id')->nullable();
+            $table->string('difficulty'); 
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\v1\RecipeController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\v1\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckRecipeOwner;
 use Illuminate\Support\Facades\Hash;
@@ -11,10 +12,20 @@ use Illuminate\Support\Facades\Hash;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+    Route::group(['prefix' => 'v1'], function() {
+    Route::get('recipes', [RecipeController::class, 'index']);
+    });
+
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function() {
-    Route::apiResource('recipes', RecipeController::class)->except(['destroy']);
+    Route::apiResource('recipes', RecipeController::class)->except(['destroy', 'index']);
     Route::delete('recipes/{recipe}', 'RecipeController@destroy')->middleware(CheckRecipeOwner::class);
+    Route::post('logout', [AuthController::class, 'logout']);
 });
+
+
+
 
 Route::get('get-tokens', function() {
     $faker = \Faker\Factory::create();

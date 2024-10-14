@@ -2,72 +2,66 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function register(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+            ]);
 
-    public function register(Request $request) {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+            ]);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid input'], 422);
         }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'token' => $token,
-            'user' => $user,
-            'message' => 'Chef registered successfully'
-        ], 201);
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        $credentials = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json(['error' => 'Invalid login details'], 401);
+            }
 
-        if  (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            $user = Auth::user();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'message' => 'Logged in successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid input'], 422);
         }
-
-        $user = Auth::user();//return authenticated user so the token can be created
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'token' => $token,
-            'user' => $user,
-            'message' => 'Chef Logged in successfully'
-        ], 201);
     }
 
     public function logout(Request $request)
     {
+        $request->user()->tokens()->delete();
 
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            'message' => 'Logout successful'
-        ], 200);
+        return response()->json(['message' => 'Successfully logged out']);
     }
-
-
 }

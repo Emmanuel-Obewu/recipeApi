@@ -30,6 +30,14 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+
         try {
             $validatedInput = $request->validate([
                 'title' => 'required|string|max:295',
@@ -117,9 +125,9 @@ class RecipeController extends Controller
         $recipe = Recipe::findOrFail($id);
 
 
-        // if ($recipe->user_id !== Auth::id()) {
-        //     return response()->json(['message' => 'Unauthorized'], 403);
-        // }
+        if ($recipe->user_id !== Auth::id()) {
+            return response()->json(['message' => 'You are only allowed to delete your own recipes'], 403);
+        }
 
         $recipe->delete();
 
