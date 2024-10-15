@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Hash;
     Route::get('recipes', [RecipeController::class, 'index']);
     });
 
-Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function() {
+Route::group(['prefix' => 'v1', 'middleware' => ['check_bearer_token', 'auth:sanctum']], function() {
     Route::apiResource('recipes', RecipeController::class)->except(['destroy', 'index']);
-    Route::delete('recipes/{recipe}', 'RecipeController@destroy')->middleware(CheckRecipeOwner::class);
+    Route::delete('recipes/{recipe}', 'RecipeController@destroy')->middleware('CheckRecipeOwner');
     Route::post('logout', [AuthController::class, 'logout']);
 });
 

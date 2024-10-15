@@ -3,8 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Illuminate\Auth\Middleware\Authenticate;
-
+use App\Http\Middleware\CheckBearerToken;
 
 class Kernel extends HttpKernel
 {
@@ -14,10 +13,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        'check_bearer_token' => CheckBearerToken::class,
         // \App\Http\Middleware\TrustProxies::class,
         // \App\Http\Middleware\RedirectIfAuthenticated::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
     ];
 
     /**
